@@ -1,0 +1,18 @@
+V_NEURON/
+__pycache__/
+*.pyc
+
+# Environment & Credentials
+.env
+.ipynb_checkpoints/
+
+# Data & Large Files
+data/
+*.gpkg
+*.osm
+*.zip
+*.csv
+
+# Logs
+logs/
+*.log

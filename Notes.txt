@@ -1,0 +1,90 @@
+Folder Structure
+
+V-NEURON/
+data/ (To store raw GTFS zips and OSM exports) 
+notebooks/ (For initial exploration in Jupyter) 
+src/ (For your final Python scripts and Flask API) 
+database/ (For SQL schemas and PostGIS setup scripts) 
+.env (To store your Google Maps API keys and DB credentials securely)
+
+Created a new venv
+py -3.10 -m venv V_NEURON
+V_NEURON\Scripts\activate
+
+Install the required libraries
+pip install osmnx networkx pandas geopandas matplotlib ipykernel
+
+Create custom kernel
+python -m ipykernel install --user --name=vneuron_env --display-name "Python (V-NEURON)"
+
+Create the V-NEURON Database
+
+Install PostgreSQL & PostGIS 16
+pass:holi123
+port5432
+go to stack builder
+spatial extension postgis3.5
+
+Open pgAdmin 4.
+
+Right-click on Servers > Register > Server to connect (use the password you created in Step 1).
+
+Right-click on Databases > Create > Database....
+
+Name it v_neuron_db and click Save.
+
+Enable PostGIS (The "Spatial Brains")
+By default, PostgreSQL only understands text and numbers. We need to "activate" the PostGIS extension so it understands coordinates and map geometries.
++1
+
+Select your DB: In the left sidebar, click on your new v_neuron_db to highlight it.
+
+Open the Query Tool:
+
+Look at the top menu bar in pgAdmin. Click the icon that looks like a Magnifying Glass over a Table (or go to Tools > Query Tool).
+
+Run the Activation Command:
+
+In the empty white box that appears, type exactly this:
+
+SQL
+CREATE EXTENSION postgis;
+Press the Execute/Refresh button (the "Play" button or F5).
+
+You should see a message saying "Query returned successfully."
+
+Verification:
+
+Delete the previous text and type:
+
+SQL
+SELECT postgis_full_version();
+Press Execute (F5) again.
+
+In the "Data Output" tab below, you should see a long string starting with something like POSTGIS="3.4.2". If you see this, your database is now "map-aware".
+
+
+
+Step 5: Link Python to your Database
+Now we need to give your Python environment the "drivers" it needs to send data into that database.
+
+Open your Terminal/Command Prompt: Navigate to your V-NEURON project folder.
+
+Activate your environment (if it isn't already):
+
+Windows: .\venv\Scripts\activate
+
+Mac/Linux: source venv/bin/activate
+
+
+Install the Adapters: Run this command to install psycopg2 (the driver) and SQLAlchemy (the toolkit that helps Python talk to SQL):
+
+Bash
+pip install psycopg2-binary sqlalchemy
+
+
+
+Initialize Git and Connect to GitHub
+2. Create the .gitignore File
+3. Freeze Requirements
+4. Initial Commit
