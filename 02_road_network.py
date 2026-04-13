@@ -32,6 +32,13 @@ fig, ax = ox.plot_graph(
     dpi=300              # Higher DPI = better quality (default is usually 300)
 )
 
+# Convert graph to GeoDataFrames (nodes + edges)
+gdf_nodes, gdf_edges = ox.graph_to_gdfs(G)
+
+# Save as shapefiles
+gdf_edges.to_file("data/nagpur_edges.shp")
+gdf_nodes.to_file("data/nagpur_nodes.shp")
+
 # 5. Visualize the network
 fig, ax = ox.plot_graph(G, node_size=0, edge_color='#1f77b4', edge_linewidth=0.3, bgcolor='k')
 plt.show()
