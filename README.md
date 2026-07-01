@@ -35,9 +35,9 @@ By evaluating journeys across both **free-flow (Off-Peak)** and **congested (Pea
 
 ## Images
 
-![IMG1](Media\IMG_0.jpg)
-![IMG2](Media\IMG_1.jpg)
-![IMG3](Media\IMG_2.jpg)
+![IMG1](Media/IMG_0.jpg)
+![IMG2](Media/IMG_1.jpg)
+![IMG3](Media/IMG_2.jpg)
 
 
 ---
