@@ -8,8 +8,8 @@ hwy_speeds = {'motorway': 80, 'trunk': 60, 'primary': 50, 'secondary': 40, 'tert
 G = ox.routing.add_edge_speeds(G, hwy_speeds=hwy_speeds)
 G = ox.routing.add_edge_travel_times(G)
 
-sadar_node_id = 4602227395
-mankapur_node_id = 6045642714
+sadar_node_id = 3140418434
+mankapur_node_id = 3755594366
 
 try:
     print(f"Finding route between {sadar_node_id} and {mankapur_node_id}...")
@@ -22,7 +22,7 @@ try:
     # EXPORT FOR QGIS
     route_gdf = ox.routing.route_to_gdf(G, route)
     route_gdf.to_file("data/route_test.geojson", driver='GeoJSON')
-    print("✅ ID-based route saved to data/route_sadar_mankapur_id.geojson")
+    print("✅ ID-based route saved to data/route_sadar_mankapur_id1.geojson")
     
 except nx.NetworkXNoPath:
     print("❌ Error: No path found.")

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-NEURON - Multimodal Routing Console</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- Main Map Container -->
+    <div id="map"></div>
+
+    <!-- Top-Left Routing Console -->
+    <div class="console-box routing-console">
+        <div class="console-header">
+            <div class="logo-icon">
+                <i class="fa-solid fa-location-arrow"></i>
+            </div>
+            <div>
+                <h1>V-NEURON</h1>
+                <h2>Multimodal Routing Console</h2>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-wrapper">
+                <i class="fa-solid fa-circle-dot origin-dot"></i>
+                <input type="text" id="origin" placeholder="Enter starting point or click map..." list="stations-list">
+            </div>
+            <div class="input-wrapper">
+                <i class="fa-solid fa-location-pin destination-pin"></i>
+                <input type="text" id="destination" placeholder="Enter destination or click map..." list="stations-list">
+            </div>
+        </div>
+        
+        <datalist id="stations-list">
+            <!-- Dynamically populated from backend -->
+        </datalist>
+
+        <div class="controls-row">
+            <div class="control-label">TIME SCENARIO</div>
+            <div class="scenario-buttons">
+                <button id="btn-off-peak" class="toggle-btn active" onclick="setScenario('off_peak')">
+                    <span class="indicator green"></span> Off-Peak
+                </button>
+                <button id="btn-peak" class="toggle-btn" onclick="setScenario('peak')">
+                    <span class="indicator red"></span> Peak Hour
+                </button>
+            </div>
+        </div>
+
+        <div class="controls-row">
+            <div class="control-label">TRAVEL MODE</div>
+            <div class="mode-buttons">
+                <button id="btn-all-modes" class="toggle-btn active" onclick="setMode('all_modes')">All Modes</button>
+                <button id="btn-road-only" class="toggle-btn" onclick="setMode('road_only')">Road Only</button>
+            </div>
+        </div>
+
+        <button id="btn-calculate" class="primary-btn" onclick="calculateRoute()">Calculate Route</button>
+
+        <!-- Route Details Display -->
+        <div id="route-details" class="route-details-panel hidden">
+            <h3>ROUTE DETAILS</h3>
+            <div class="metrics-row">
+                <div class="metric">
+                    <span class="metric-label">Distance</span>
+                    <span class="metric-value" id="detail-distance">-- km</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Time</span>
+                    <span class="metric-value highlight" id="detail-time">-- mins</span>
+                </div>
+            </div>
+            <div class="modes-breakdown">
+                <span class="metric-label">Transportation Modes</span>
+                <div id="detail-modes-list" class="modes-list">
+                    <!-- Dynamic mode badges -->
+                </div>
+            </div>
+            <div id="step-directions" class="step-directions-container">
+                <!-- Step by step directions collapse -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom-Left Route Tracking Simulator -->
+    <div class="console-box simulator-console hidden" id="simulator-panel">
+        <div class="panel-title">
+            <i class="fa-solid fa-clock"></i> ROUTE TRACKING SIMULATOR
+        </div>
+        <div class="simulator-controls">
+            <button id="btn-track-play" class="sim-btn play-btn" onclick="toggleTracking()">
+                <i class="fa-solid fa-play"></i> Start tracking
+            </button>
+            <button class="sim-btn reset-btn" onclick="resetTracking()">Reset</button>
+        </div>
+        <div class="speed-selector">
+            <span class="speed-label">Simulation speed:</span>
+            <div class="speed-btn-group">
+                <button class="speed-btn active" onclick="setSimSpeed(1)">1x</button>
+                <button class="speed-btn" onclick="setSimSpeed(2)">2x</button>
+                <button class="speed-btn" onclick="setSimSpeed(5)">5x</button>
+                <button class="speed-btn" onclick="setSimSpeed(10)">10x</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom-Right AI Assistant Chatbot -->
+    <div class="chat-console" id="chat-panel">
+        <div class="chat-header" onclick="toggleChatCollapse()">
+            <div class="header-title">
+                <i class="fa-solid fa-robot"></i> V-NEURON AI Assistant
+            </div>
+            <i class="fa-solid fa-chevron-down" id="chat-collapse-icon"></i>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message system">
+                    Hello! I am the V-NEURON Routing Assistant. Ask me to find a route for you, e.g., <i>"I want to go from Hingna to Medical Square. Account for traffic."</i>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Ask me to route you..." onkeydown="handleChatKey(event)">
+                <button class="chat-send-btn" onclick="sendChatMessage()">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet.js Script -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Custom JS -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
