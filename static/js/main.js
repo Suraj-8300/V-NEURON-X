@@ -263,44 +263,7 @@ function drawRoute(data) {
     document.getElementById("origin").value = data.origin_name;
     document.getElementById("destination").value = data.destination_name;
 
-    // Split coordinates by modes to draw color-coded paths
-    // Iterate through segments and slice coordinate array
-    let coordPointer = 0;
-    
-    data.segments.forEach(seg => {
-        // Approximate coordinates belonging to this segment based on its percentage length
-        // To be precise, since coordinates map to intersections, we track the coordinate indexing
-        // We will match coordinates along the segment line.
-        // We draw individual sub-polylines representing segments.
-        const segMode = seg.mode;
-        const segName = seg.name;
-        
-        let pathColor = '#2563eb'; // Default Road (Blue)
-        let isDashed = false;
-        
-        if (segMode === 'Walk') {
-            pathColor = '#d97706'; // Walking (Orange/Brown)
-            isDashed = true;
-        } else if (segMode === 'Metro') {
-            // Distinguish Orange vs Aqua line
-            if (segName.includes("Orange Line")) {
-                pathColor = '#ea580c'; // Orange Line
-            } else if (segName.includes("Aqua Line")) {
-                pathColor = '#0891b2'; // Aqua Line
-            } else {
-                pathColor = '#10b981'; // General Subway (Green)
-            }
-        }
-        
-        // Find segment coordinate coordinates (segment boundaries are approximate based on distance)
-    });
-
-    // Let's draw a full path but styled by mode
-    // To draw it cleanly, we can draw the route polylines. Let's do it using segments
-    // Or simpler, let's draw the continuous coordinate polyline.
-    // For stunning look: We trace each segment. Let's trace it and draw:
-    // To do this, let's look at coordinate bounds. Since backend segments are computed in order, 
-    // we can draw the path segments by mapping node coords or mapping continuous indices:
+    // Draw color-coded polylines per segment (proportional coordinate slicing)
     let remainingCoords = [...routeCoords];
     
     // Draw base line for the entire route

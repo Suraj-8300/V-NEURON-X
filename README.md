@@ -8,46 +8,47 @@ app_port: 7860
 ---
 
 <p align="center">
-  <img src="https://img.shields.io/badge/V--NEURON-Multimodal_Routing_Engine-1e3a8a?style=for-the-badge&logo=openstreetmap&logoColor=white" alt="V-NEURON Badge"/>
+  <img src="https://img.shields.io/badge/V--NEURON--X-Multimodal_Routing_Engine-1e3a8a?style=for-the-badge&logo=openstreetmap&logoColor=white" alt="V-NEURON-X Badge"/>
 </p>
 
-<h1 align="center">🚦 V-NEURON</h1>
+<h1 align="center">🚦 V-NEURON-X</h1>
 
 <p align="center">
   <strong>Unified Omnimodal Urban Navigation & Routing System for Nagpur</strong>
 </p>
 
 <p align="center">
-  <a href="#-features"><img src="https://img.shields.io/badge/Features-12+-10b981?style=flat-square" alt="Features"/></a>
-  <a href="#-tech-stack"><img src="https://img.shields.io/badge/Stack-Flask_+_Leaflet-3b82f6?style=flat-square" alt="Tech Stack"/></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-f59e0b?style=flat-square" alt="License"/></a>
-  <a href="https://github.com/Macbeth1501/V-NEURON"><img src="https://img.shields.io/badge/GitHub-Macbeth1501%2FV--NEURON-181717?style=flat-square&logo=github" alt="GitHub"/></a>
-  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
+  <a href="https://surajdhere-v-neuron-x.hf.space"><img src="https://img.shields.io/badge/🤗_Live_Demo-Hugging_Face-FFD21E?style=flat-square" alt="Live Demo"/></a>
+  <a href="https://suraj.shinelikesun.workers.dev/vneuron"><img src="https://img.shields.io/badge/Portfolio_View-shinelikesun-6366f1?style=flat-square" alt="Portfolio"/></a>
+  <a href="https://github.com/Suraj-8300/V-NEURON-X"><img src="https://img.shields.io/badge/GitHub-Suraj--8300%2FV--NEURON--X-181717?style=flat-square&logo=github" alt="GitHub"/></a>
+  <img src="https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/Flask-3.x-000000?style=flat-square&logo=flask" alt="Flask"/>
+  <img src="https://img.shields.io/badge/Docker-Deployed-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"/>
 </p>
 
 ---
 
 ## 📌 About
 
-**V-NEURON** is a state-of-the-art multimodal routing engine and interactive visualization platform designed specifically for **Nagpur, Maharashtra, India**. It consolidates Nagpur's **road network**, **walking pathways**, **metro rail infrastructure** (Orange & Aqua lines), and **bus transit stops** into a single, unified, weighted routing graph.
+**V-NEURON-X** is a state-of-the-art multimodal routing engine and interactive visualization platform designed specifically for **Nagpur, Maharashtra, India**. It consolidates Nagpur's **road network**, **walking pathways**, **metro rail infrastructure** (Orange & Aqua lines), and **bus transit stops** into a single, unified, weighted routing graph.
 
-By evaluating journeys across both **free-flow (Off-Peak)** and **congested (Peak-Hour)** traffic scenarios, V-NEURON provides:
+By evaluating journeys across both **free-flow (Off-Peak)** and **congested (Peak-Hour)** traffic scenarios, V-NEURON-X provides:
 
-- 🛣️ High-fidelity multimodal route planning
-- 🔄 Transfer indexing across transit modes
-- 🚗 Real-time vehicle tracking simulation
-- 🤖 Stateful **Agentic AI Chatbot** assistant
+- 🛣️ High-fidelity multimodal route planning (Walk + Road + Metro)
+- 🔄 Transfer indexing with boarding penalties across transit modes
+- 🚗 Real-time animated vehicle tracking simulation
+- 🤖 **AI Chatbot assistant** with natural language routing & **spelling correction**
+- 📍 170+ landmarks, metro stations & bus stops on an interactive map
 
-> Built as a **Final Year Project (FYP)** at SVPCET, Nagpur, V-NEURON demonstrates how graph theory, geospatial data, and modern AI can transform urban transit planning.
+> Built as a **Final Year Project (FYP)** at SVPCET, Nagpur — demonstrating how graph theory, geospatial data, and modern AI can transform urban transit planning.
 
 ---
 
-## Images
+## 🖼️ Screenshots
 
-![IMG1](Media/IMG_0.jpg)
-![IMG2](Media/IMG_1.jpg)
-![IMG3](Media/IMG_2.jpg)
-
+![Screenshot 1](Media/IMG_0.jpg)
+![Screenshot 2](Media/IMG_1.jpg)
+![Screenshot 3](Media/IMG_2.jpg)
 
 ---
 
@@ -55,18 +56,18 @@ By evaluating journeys across both **free-flow (Off-Peak)** and **congested (Pea
 
 | Feature | Description |
 |---|---|
-| **Multimodal Routing** | Combines driving, metro, bus, and walking into a single shortest-path query using Dijkstra's algorithm on a unified NetworkX graph |
-| **Dual Traffic Scenarios** | Compare Off-Peak vs Peak-Hour routing with realistic congestion-calibrated speeds |
+| **Multimodal Routing** | Combines driving, metro, and walking into a single shortest-path query (Dijkstra) on a unified NetworkX graph |
+| **Dual Traffic Scenarios** | Compare Off-Peak (free flow) vs Peak-Hour (congested) routing with calibrated speeds |
 | **Interactive Map** | Leaflet-based map with dynamic markers for 170+ metro stations, bus stops, landmarks, colleges, and hospitals |
-| **Live Vehicle Simulation** | Animated vehicle tracking along computed routes with real-time telemetry (speed, mode, ETA, distance remaining) |
-| **AI Assistant Chatbot** | Natural language interface that extracts origin, destination, and preferences conversationally to update routing states and controls |
-| **Fuzzy Location Matching** | Robust geocoding with local cache, fuzzy matching, substring search, and Nominatim fallback |
+| **Color-Coded Routes** | Each segment (Walk 🟡, Road 🔵, Metro 🟠/🔵) drawn in distinct colors with popup details |
+| **Live Vehicle Simulation** | Animated vehicle tracking along computed routes with real-time speed, mode, ETA, and distance telemetry |
+| **AI Assistant Chatbot** | Natural language interface — extracts origin, destination, and scenario to trigger routing automatically |
+| **Spelling Correction** | Fuzzy matching (`difflib`) corrects typos in location names before geocoding |
+| **Fuzzy Location Matching** | 4-tier geocoding: direct lookup → substring match → fuzzy match → Nominatim online |
 | **Metro Rail Logic** | Full Orange Line (18 stations) & Aqua Line (19 stations) with boarding penalties and transfer costs |
-| **Mode-Change Waypoints** | Visual markers on the map where transit mode switches occur (Road → Metro → Walk) |
-| **Map Style Toggle** | Switch between Light (CartoDB Voyager/Positron) and Standard Street (OSM) tile layers |
-| **Auto-Recalculate** | Route automatically recalculates when travel mode or time scenario changes |
 | **Autocomplete Search** | Type-ahead search across all known locations with categorized suggestions |
-| **Data Pipeline** | 15-step automated pipeline: download OSM → project → snap transit → calibrate → audit |
+| **Map Style Toggle** | Switch between Light (CartoDB) and Standard Street (OSM) tile layers |
+| **Auto-Recalculate** | Route automatically recalculates when travel mode or time scenario changes |
 
 ---
 
@@ -85,229 +86,211 @@ graph LR
     H --> J[Flask Web Server]
     I --> J
     J --> K[Leaflet UI Map<br/>+ Simulation]
-    J --> L[Rule-Based NLP<br/>AI Chat Agent]
+    J --> L[Rule-Based NLP<br/>+ Fuzzy Spelling<br/>AI Chat Agent]
     L --> K
 ```
-
-### Data Pipeline Steps
-
-| Step | Action | Output |
-|------|--------|--------|
-| 1 | Download Nagpur road network from OSM | `nagpur_roads.graphml` |
-| 2 | Fetch metro stations & bus stops | `nagpur_metro.geojson`, `nagpur_bus_stops.geojson` |
-| 3 | Push raw layers to PostGIS *(optional)* | Database tables |
-| 4 | Project all layers to UTM (EPSG:32644) | Projected graphml & geojsons |
-| 5 | Push projected layers + spatial indexes *(optional)* | Indexed DB tables |
-| 6 | Snap metro stations to road network | `vneuron_multimodal_base.graphml` |
-| 7 | Add Orange & Aqua metro rail edges | `vneuron_omnimodal_final.graphml` |
-| 8 | Generate peak-hour calibrated network | `vneuron_calibrated_network.graphml` |
-| 9 | Comparative route audit (SVPCET → Automotive Sq.) | Console output |
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Core Implementation
-* **Backend**: Python 3.10+, Flask (Web API & Server), NetworkX (Graph structures & Dijkstra routing), OSMnx (OpenStreetMap API), GeoPandas / Shapely (Geospatial data & projections), PyProj (UTM Zone 44N transformation), Geopy (Geocoding).
-* **Database**: PostgreSQL with PostGIS extension for spatial queries and GIST indexes.
-* **Frontend**: HTML5, Vanilla CSS3 (Glassmorphism theme), Vanilla JS, Leaflet.js (Map rendering), FontAwesome (Icons).
-
-### Alternate Architecture (FastAPI + React)
-* **Backend**: FastAPI, Groq SDK (LLaMA 3.1 8B chat agent).
-* **Frontend**: React 19, Vite 8, React-Leaflet, Framer Motion, Lucide React, Axios.
+| Layer | Technology |
+|---|---|
+| **Backend** | Python 3.12, Flask, Gunicorn |
+| **Routing** | NetworkX (Dijkstra), OSMnx (OSM graph builder) |
+| **Geospatial** | GeoPandas, Shapely, PyProj (UTM Zone 44N) |
+| **Geocoding** | Geopy / Nominatim, `difflib` fuzzy matching |
+| **Frontend** | HTML5, Vanilla CSS3 (glassmorphism), Vanilla JS |
+| **Map** | Leaflet.js, CartoDB & OSM tile layers |
+| **Deployment** | Docker (Hugging Face Spaces), Cloudflare Workers (portfolio embed) |
 
 ---
 
 ## 📂 Repository Structure
 
 ```text
-V-NEURON/
-├── README.md                  # Project handbook (this file)
-├── .gitignore                 # Unified git exclusion rules
-├── Project Title-2-RRSC.pdf   # Research & academic documentation
-├── server.py                  # Main Flask Web API & Server
+V-NEURON-X/
+├── README.md                       # Project handbook (this file)
+├── server.py                       # Main Flask Web API & routing engine
+├── Dockerfile                      # Docker container for HF Spaces deployment
+├── requirements.txt                # Python dependencies
+├── .dockerignore                   # Docker build exclusions
+├── .gitignore
+├── Project Title-2-RRSC.pdf        # Academic research documentation
 │
-├── data/                      # Precompiled Nagpur multimodal graphs & GeoJSONs
-│   ├── nagpur_metro.geojson
-│   ├── nagpur_bus_stops.geojson
-│   ├── vneuron_multimodal_base.graphml
-│   ├── vneuron_omnimodal_final.graphml
-│   └── vneuron_calibrated_network.graphml
+├── data/                           # Precompiled Nagpur multimodal graphs & GeoJSONs
+│   ├── nagpur_metro.geojson        # Metro station point data
+│   ├── nagpur_bus_stops.geojson    # Bus stop point data
+│   ├── vneuron_omnimodal_final.graphml   # Off-peak full graph
+│   ├── vneuron_omnimodal_final.pickle    # Cached fast-load version
+│   ├── vneuron_calibrated_network.graphml # Peak-hour graph
+│   └── vneuron_calibrated_network.pickle
 │
-├── templates/                 # Frontend HTML pages
-│   └── index.html             # Dashboard UI structure
+├── templates/
+│   └── index.html                  # Dashboard HTML structure
 │
-├── static/                    # Static UI resources
-│   ├── css/
-│   │   └── style.css          # Glassmorphic style layouts
-│   └── js/
-│       └── main.js            # Leaflet, simulator & chat events
+├── static/
+│   ├── css/style.css               # Glassmorphic UI styles
+│   └── js/main.js                  # Leaflet map, simulator & AI chat logic
 │
-└── scripts/                   # Data pipeline scripts (01_db_test.py to 15_comparative_audit.py)
+└── scripts/                        # 15-step data pipeline (OSM → routable graph)
     ├── 01_db_test.py
-    ├── 02_road_network.py
-    ├── 03_transit_data.py
-    ├── 04_db_import.py
-    ├── 05_crs_transform.py
-    ├── 06_finalize_db.py
-    ├── 07_route_analysis.py
-    ├── 08_export_route.py
-    ├── 09_test_custom_route_gps_based.py
-    ├── 10_multimodal_snap.py
-    ├── 11_metro_rail_logic.py
-    ├── 12_omnimodal_test.py
-    ├── 12_verify_metro.py
-    ├── 13_route_analysis_v2.py
-    ├── 14_transfer_penalties.py
-    └── 15_comparative_audit.py
+    ├── 02_road_network.py          # Download Nagpur road graph from OSM
+    ├── 03_transit_data.py          # Fetch metro & bus GeoJSONs
+    ├── 10_multimodal_snap.py       # Snap metro stations to road network
+    ├── 11_metro_rail_logic.py      # Add Orange & Aqua rail edges
+    ├── 14_transfer_penalties.py    # Calibrate boarding/transfer penalties
+    ├── 15_comparative_audit.py     # Validate routing outputs
+    └── convert_to_pickle.py        # Pre-serialise graphs for fast startup
 ```
 
 ---
 
-## ⚙️ Setup & Installation
+## 🚀 Deployment
 
-### 1. Prerequisites
-* **Python** 3.10+
-* **PostgreSQL** with **PostGIS** extension.
+### Option A — Live on Hugging Face Spaces (Docker)
+The easiest way to run V-NEURON-X. No local setup needed:
 
-### 2. Database Configuration
-1. Open PostgreSQL (via pgAdmin or psql) and create `vneuron_db`:
-   ```sql
-   CREATE DATABASE vneuron_db;
-   ```
-2. Enable PostGIS:
-   ```sql
-   \c vneuron_db;
-   CREATE EXTENSION postgis;
-   ```
-3. Update connection credentials in pipeline scripts if different from default (`postgres` / `sql123`).
+**[▶ Open Live Demo → surajdhere-v-neuron-x.hf.space](https://surajdhere-v-neuron-x.hf.space)**
 
-### 3. Environment Setup
-1. Navigate to the project root directory and activate the virtual environment:
-   * **Windows (PowerShell)**:
-     ```powershell
-     .\V-NEURON-venv\Scripts\Activate.ps1
-     ```
-   * **Windows (CMD)**:
-     ```cmd
-     .\V-NEURON-venv\Scripts\activate.bat
-     ```
-2. Install dependencies:
-   ```bash
-   pip install flask geopy geopandas osmnx networkx pyproj sqlalchemy psycopg2-binary
-   ```
+The Space uses the `Dockerfile` in this repo and loads precompiled `.pickle` graphs at startup.
 
 ---
 
-## 🏃 Running the Application
+### Option B — Run Locally with Docker
 
-### 1. Build Routing Graphs
-Ensure PostgreSQL is active, then run the pipeline scripts sequentially (or use cached ones in `data/`):
 ```bash
-python scripts/02_road_network.py
-python scripts/03_transit_data.py
-python scripts/04_db_import.py
-python scripts/05_crs_transform.py
-python scripts/06_finalize_db.py
-python scripts/10_multimodal_snap.py
-python scripts/11_metro_rail_logic.py
-python scripts/14_transfer_penalties.py
+# Clone the repo
+git clone https://github.com/Suraj-8300/V-NEURON-X.git
+cd V-NEURON-X
+
+# Build and run
+docker build -t vneuron-x .
+docker run -p 7860:7860 vneuron-x
 ```
 
-### 2. Launch the Web Portal
-Start the server:
+Open **[http://localhost:7860](http://localhost:7860)** in your browser.
+
+---
+
+### Option C — Run Locally with Python (venv)
+
+#### 1. Prerequisites
+- Python 3.10+
+- The precompiled graph files must be in `data/` (`.graphml` or `.pickle`)
+
+#### 2. Setup
+```bash
+git clone https://github.com/Suraj-8300/V-NEURON-X.git
+cd V-NEURON-X
+
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+pip install -r requirements.txt
+```
+
+#### 3. Launch
 ```bash
 python server.py
 ```
-Open **[http://localhost:5000/](http://localhost:5000/)** in your browser.
+
+Open **[http://localhost:7860](http://localhost:7860)** in your browser.
+
+> **Note:** If you don't have the graph pickle files, run the data pipeline scripts in `scripts/` sequentially (requires PostgreSQL + PostGIS for steps 3–6, optional otherwise).
 
 ---
 
-## 🕹️ Interactive Guide
+## 🕹️ Usage Guide
 
 ### Manual Input Routing
-1. Type a place name (e.g. `Hingna` or `Medical Square`) into the start/destination search fields, or simply **click directly on the map** to place pins (Blue/Green for Start, Red for Destination).
+1. Type a place name (e.g. `Hingna` or `Medical Square`) into the start/destination search fields — or **click directly on the map** to place pins.
 2. Configure your trip:
-   - **Time Scenario**: Select **Off-Peak** (free flow driving) or **Peak Hour** (heavy congestion, which incentives using the Metro).
-   - **Travel Mode**: Choose **All Modes** (multimodal routing) or **Road Only** (restricted to road vehicles).
-3. Click **Calculate Route** to compute and render the path. 
+   - **Time Scenario**: `Off-Peak` (free flow) or `Peak Hour` (heavy congestion, incentivises Metro)
+   - **Travel Mode**: `All Modes` (multimodal) or `Road Only`
+3. Click **Calculate Route** to compute and render the colour-coded path.
 
 ### Route Simulation
-* Once a route is loaded, the **Route Tracking Simulator** panel will appear at the bottom-left.
-* Click **Start tracking** to watch a blue indicator dot animate along the route.
-* Toggle speed multipliers (`1x`, `2x`, `5x`, `10x`) to speed up or slow down the tracking.
+- Once a route is loaded, click **Start tracking** to watch an animated vehicle dot follow the route.
+- Use speed multipliers (`1x`, `2x`, `5x`, `10x`) to control simulation speed.
 
-### Chatbot Routing
-* Expand the **V-NEURON AI Assistant** panel at the bottom-right.
-* Type a routing prompt in plain English, e.g.:
-  - *"I want to go from Hingna to Medical Square. There is heavy traffic."*
-  - *"Take me from Airport to Sitabuldi."*
-  - *"Route me from YCCE to Sadar under Peak Hour."*
-* The assistant will parse the request, update the map, synchronize the sidebar buttons, and provide a textual itinerary summary!
+### AI Assistant Chatbot
+Expand the **V-NEURON AI Assistant** panel (bottom-right) and type naturally:
+
+```
+"I want to go from Hingna to Medical Square. There is heavy traffic."
+"Take me from Airport to Sitabuldi by road only."
+"Route me from YCCE to Sadar."
+"hingan to medcal squre"   ← spelling correction handles typos automatically
+```
+
+The assistant parses your request, corrects spelling, updates the map, synchronises scenario controls, and replies with a formatted itinerary summary.
 
 ---
 
 ## 📡 API Reference
 
+### `GET /api/stations`
+Returns a sorted list of all known landmark and metro station names.
+
+### `GET /api/landmarks/detailed`
+Returns all landmarks with coordinates and type (`metro` or `landmark`).
+
 ### `POST /api/route`
-Calculate a multimodal route between two locations.
-* **Payload:**
-  ```json
-  {
-    "origin": "VNIT",
-    "destination": "Nagpur Junction",
-    "scenario": "peak",
-    "mode": "all_modes"
-  }
-  ```
-* **Response:** Segment arrays containing coordinates, distance, travel time, and highway types.
+Compute a route between two locations.
+```json
+{
+  "origin": "VNIT",
+  "destination": "Sadar",
+  "scenario": "peak",
+  "mode": "all_modes"
+}
+```
+**Response:** `origin_name`, `destination_name`, `total_distance_km`, `total_time_min`, `path_coords`, `segments[]`
 
 ### `POST /api/chat`
-Interact with the stateful AI routing chatbot.
-* **Payload:**
-  ```json
-  {
-    "message": "I want to go from Airport to Sitabuldi during rush hour"
-  }
-  ```
-* **Response:** Conversational reply + synchronized map route parameters.
+Interact with the AI routing assistant.
+```json
+{ "message": "from Airport to Sitabuldi during rush hour" }
+```
+**Response:** `response` (markdown-formatted text), `route_data` (same shape as `/api/route`)
 
 ---
 
-## ⚙️ Calibration Constants
-
-All project configuration is centralized in [`server.py`](server.py):
+## ⚙️ Key Constants (`server.py`)
 
 | Parameter | Value | Description |
 |---|---|---|
-| `CENTER_LATLON` | `(21.1458, 79.0882)` | Nagpur map center |
-| `CRS_PROJECTED` | `EPSG:32644` | UTM Zone 44N projection for metric calculations |
-| `METRO_SPEED_KMH` | `33` | Average speed of Nagpur Metro |
-| `WALKING_SPEED_MPS` | `1.25` | Average walking speed (~4.5 km/h) |
-| `BOARDING_PENALTY_S` | `300` | 5-minute wait time transfer penalty |
+| `CRS_PROJECTED` | `EPSG:32644` | UTM Zone 44N — metric distance calculations |
+| `METRO_SPEED_KMH` | `33` | Average Nagpur Metro speed |
+| `WALKING_SPEED_MPS` | `1.25` | Walking speed (~4.5 km/h) |
+| `BOARDING_PENALTY_S` | `300` | 5-minute metro boarding/transfer penalty |
+| Fuzzy match cutoff | `0.70` | Minimum similarity for spelling correction |
 
 ---
 
-## 📊 Performance Statistics
+## 📊 Performance
 
 | Metric | Value |
 |---|---|
 | Graph Nodes | ~110,000+ (road + transit) |
 | Graph Edges | ~250,000+ |
-| Metro Stations Connected | 37 |
+| Metro Stations | 37 (Orange + Aqua lines) |
 | Bus Stops Indexed | 80+ |
-| Route Computation | < 500ms typical |
-| Geocoding (local cache) | < 1ms |
-| Chatbot Parsing & Response | < 200ms |
+| Route Computation | < 500 ms typical |
+| Geocoding (local cache) | < 1 ms |
+| Chat Parse & Response | < 200 ms |
 
 ---
 
-## 👥 Team Members
+## 👥 Team
 
-* **Rochan Awasthi** — [LinkedIn](https://www.linkedin.com/in/rochan-awasthi-393242302/) | [Email](mailto:rochansawasthi@gmail.com)
-* **Kashish Joseph** — [Email](mailto:kashishjoseph2@gmail.com)
-* **Suraj Dhere** — [Email](mailto:surajdhere8300@gmail.com)
-* **Shreya Doye** — [Email](mailto:doyeshreya18@gmail.com)
+| Name | Contact |
+|---|---|
+| **Suraj Dhere** | [surajdhere8300@gmail.com](mailto:surajdhere8300@gmail.com) |
+| **Rochan Awasthi** | [LinkedIn](https://www.linkedin.com/in/rochan-awasthi-393242302/) · [rochansawasthi@gmail.com](mailto:rochansawasthi@gmail.com) |
+| **Kashish Joseph** | [kashishjoseph2@gmail.com](mailto:kashishjoseph2@gmail.com) |
+| **Shreya Doye** | [doyeshreya18@gmail.com](mailto:doyeshreya18@gmail.com) |
 
 ---
 
@@ -321,6 +304,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 - **[OpenStreetMap](https://www.openstreetmap.org/)** — Road network & transit data
 - **[OSMnx](https://github.com/gboeing/osmnx)** — Graph construction from OSM
-- **[NetworkX](https://networkx.org/)** — Graph algorithms
-- **[Leaflet](https://leafletjs.com/)** — Interactive map rendering
-- **Nagpur Metro Rail Corporation** — Metro station data
+- **[NetworkX](https://networkx.org/)** — Graph algorithms & shortest-path routing
+- **[Leaflet.js](https://leafletjs.com/)** — Interactive map rendering
+- **[Hugging Face Spaces](https://huggingface.co/spaces)** — Free Docker hosting
+- **Nagpur Metro Rail Corporation** — Metro station layout data
