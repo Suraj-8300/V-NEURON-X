@@ -24,98 +24,101 @@
     <!-- Main Map Container -->
     <div id="map"></div>
 
-    <!-- Top-Left Routing Console -->
-    <div class="console-box routing-console">
-        <div class="console-header">
-            <div class="logo-icon">
-                <i class="fa-solid fa-location-arrow"></i>
+    <!-- Left Sidebar Wrapper (Desktop Stacking, Mobile Responsive) -->
+    <div class="left-sidebar">
+        <!-- Top-Left Routing Console -->
+        <div class="console-box routing-console">
+            <div class="console-header">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-location-arrow"></i>
+                </div>
+                <div>
+                    <h1>V-NEURON</h1>
+                    <h2>Multimodal Routing Console</h2>
+                </div>
             </div>
-            <div>
-                <h1>V-NEURON</h1>
-                <h2>Multimodal Routing Console</h2>
+
+            <div class="input-group">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-circle-dot origin-dot"></i>
+                    <input type="text" id="origin" placeholder="Enter starting point or click map..." list="stations-list">
+                </div>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-location-pin destination-pin"></i>
+                    <input type="text" id="destination" placeholder="Enter destination or click map..." list="stations-list">
+                </div>
+            </div>
+            
+            <datalist id="stations-list">
+                <!-- Dynamically populated from backend -->
+            </datalist>
+
+            <div class="controls-row">
+                <div class="control-label">TIME SCENARIO</div>
+                <div class="scenario-buttons">
+                    <button id="btn-off-peak" class="toggle-btn active" onclick="setScenario('off_peak')">
+                        <span class="indicator green"></span> Off-Peak
+                    </button>
+                    <button id="btn-peak" class="toggle-btn" onclick="setScenario('peak')">
+                        <span class="indicator red"></span> Peak Hour
+                    </button>
+                </div>
+            </div>
+
+            <div class="controls-row">
+                <div class="control-label">TRAVEL MODE</div>
+                <div class="mode-buttons">
+                    <button id="btn-all-modes" class="toggle-btn active" onclick="setMode('all_modes')">All Modes</button>
+                    <button id="btn-road-only" class="toggle-btn" onclick="setMode('road_only')">Road Only</button>
+                </div>
+            </div>
+
+            <button id="btn-calculate" class="primary-btn" onclick="calculateRoute()">Calculate Route</button>
+
+            <!-- Route Details Display -->
+            <div id="route-details" class="route-details-panel hidden">
+                <h3>ROUTE DETAILS</h3>
+                <div class="metrics-row">
+                    <div class="metric">
+                        <span class="metric-label">Distance</span>
+                        <span class="metric-value" id="detail-distance">-- km</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Time</span>
+                        <span class="metric-value highlight" id="detail-time">-- mins</span>
+                    </div>
+                </div>
+                <div class="modes-breakdown">
+                    <span class="metric-label">Transportation Modes</span>
+                    <div id="detail-modes-list" class="modes-list">
+                        <!-- Dynamic mode badges -->
+                    </div>
+                </div>
+                <div id="step-directions" class="step-directions-container">
+                    <!-- Step by step directions collapse -->
+                </div>
             </div>
         </div>
 
-        <div class="input-group">
-            <div class="input-wrapper">
-                <i class="fa-solid fa-circle-dot origin-dot"></i>
-                <input type="text" id="origin" placeholder="Enter starting point or click map..." list="stations-list">
+        <!-- Bottom-Left Route Tracking Simulator -->
+        <div class="console-box simulator-console hidden" id="simulator-panel">
+            <div class="panel-title">
+                <i class="fa-solid fa-clock"></i> ROUTE TRACKING SIMULATOR
             </div>
-            <div class="input-wrapper">
-                <i class="fa-solid fa-location-pin destination-pin"></i>
-                <input type="text" id="destination" placeholder="Enter destination or click map..." list="stations-list">
-            </div>
-        </div>
-        
-        <datalist id="stations-list">
-            <!-- Dynamically populated from backend -->
-        </datalist>
-
-        <div class="controls-row">
-            <div class="control-label">TIME SCENARIO</div>
-            <div class="scenario-buttons">
-                <button id="btn-off-peak" class="toggle-btn active" onclick="setScenario('off_peak')">
-                    <span class="indicator green"></span> Off-Peak
+            <div class="simulator-controls">
+                <button id="btn-track-play" class="sim-btn play-btn" onclick="toggleTracking()">
+                    <i class="fa-solid fa-play"></i> Start tracking
                 </button>
-                <button id="btn-peak" class="toggle-btn" onclick="setScenario('peak')">
-                    <span class="indicator red"></span> Peak Hour
-                </button>
+                <button class="sim-btn reset-btn" onclick="resetTracking()">Reset</button>
             </div>
-        </div>
-
-        <div class="controls-row">
-            <div class="control-label">TRAVEL MODE</div>
-            <div class="mode-buttons">
-                <button id="btn-all-modes" class="toggle-btn active" onclick="setMode('all_modes')">All Modes</button>
-                <button id="btn-road-only" class="toggle-btn" onclick="setMode('road_only')">Road Only</button>
-            </div>
-        </div>
-
-        <button id="btn-calculate" class="primary-btn" onclick="calculateRoute()">Calculate Route</button>
-
-        <!-- Route Details Display -->
-        <div id="route-details" class="route-details-panel hidden">
-            <h3>ROUTE DETAILS</h3>
-            <div class="metrics-row">
-                <div class="metric">
-                    <span class="metric-label">Distance</span>
-                    <span class="metric-value" id="detail-distance">-- km</span>
+            <div class="speed-selector">
+                <span class="speed-label">Simulation speed:</span>
+                <div class="speed-btn-group">
+                    <button class="speed-btn active" onclick="setSimSpeed(1)">1x</button>
+                    <button class="speed-btn" onclick="setSimSpeed(2)">2x</button>
+                    <button class="speed-btn" onclick="setSimSpeed(5)">5x</button>
+                    <button class="speed-btn" onclick="setSimSpeed(10)">10x</button>
                 </div>
-                <div class="metric">
-                    <span class="metric-label">Time</span>
-                    <span class="metric-value highlight" id="detail-time">-- mins</span>
-                </div>
-            </div>
-            <div class="modes-breakdown">
-                <span class="metric-label">Transportation Modes</span>
-                <div id="detail-modes-list" class="modes-list">
-                    <!-- Dynamic mode badges -->
-                </div>
-            </div>
-            <div id="step-directions" class="step-directions-container">
-                <!-- Step by step directions collapse -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottom-Left Route Tracking Simulator -->
-    <div class="console-box simulator-console hidden" id="simulator-panel">
-        <div class="panel-title">
-            <i class="fa-solid fa-clock"></i> ROUTE TRACKING SIMULATOR
-        </div>
-        <div class="simulator-controls">
-            <button id="btn-track-play" class="sim-btn play-btn" onclick="toggleTracking()">
-                <i class="fa-solid fa-play"></i> Start tracking
-            </button>
-            <button class="sim-btn reset-btn" onclick="resetTracking()">Reset</button>
-        </div>
-        <div class="speed-selector">
-            <span class="speed-label">Simulation speed:</span>
-            <div class="speed-btn-group">
-                <button class="speed-btn active" onclick="setSimSpeed(1)">1x</button>
-                <button class="speed-btn" onclick="setSimSpeed(2)">2x</button>
-                <button class="speed-btn" onclick="setSimSpeed(5)">5x</button>
-                <button class="speed-btn" onclick="setSimSpeed(10)">10x</button>
             </div>
         </div>
     </div>
@@ -141,6 +144,22 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <div class="mobile-nav-bar" id="mobile-nav-bar">
+        <button class="nav-item active" onclick="switchMobileTab('map')">
+            <i class="fa-solid fa-map"></i>
+            <span>Map</span>
+        </button>
+        <button class="nav-item" onclick="switchMobileTab('route')">
+            <i class="fa-solid fa-location-arrow"></i>
+            <span>Route</span>
+        </button>
+        <button class="nav-item" onclick="switchMobileTab('chat')">
+            <i class="fa-solid fa-robot"></i>
+            <span>AI Chat</span>
+        </button>
     </div>
 
     <!-- Leaflet.js Script -->

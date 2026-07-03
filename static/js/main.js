@@ -27,6 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loadStations();
     loadLandmarksDetailed();
     initEventListeners();
+    if (typeof initMobileLayout === 'function') {
+        initMobileLayout();
+    }
 });
 
 // 1. Initialize Leaflet Map
@@ -399,6 +402,11 @@ function drawRoute(data) {
 
     document.getElementById("route-details").classList.remove("hidden");
     document.getElementById("simulator-panel").classList.remove("hidden");
+    
+    // Auto-switch to route tab on mobile so the user sees results immediately
+    if (window.innerWidth < 768 && typeof activeMobileTab !== 'undefined' && activeMobileTab !== 'chat') {
+        switchMobileTab('route');
+    }
 }
 
 // 6. Route Tracking Simulator Logic
@@ -657,3 +665,53 @@ window.setDestLocation = function(lat, lon, name) {
     map.closePopup();
     calculateRoute();
 };
+
+// ============================================================================
+// Mobile Responsive UI helpers
+// ============================================================================
+let activeMobileTab = 'map';
+
+window.switchMobileTab = function(tab) {
+    activeMobileTab = tab;
+    
+    // Update nav items active state
+    const navItems = document.querySelectorAll('.mobile-nav-bar .nav-item');
+    navItems.forEach(item => {
+        const onclickAttr = item.getAttribute('onclick') || '';
+        const isCurrent = onclickAttr.includes(`'${tab}'`);
+        item.classList.toggle('active', isCurrent);
+    });
+
+    const leftSidebar = document.querySelector('.left-sidebar');
+    const chatPanel = document.getElementById('chat-panel');
+    
+    if (window.innerWidth < 768) {
+        if (tab === 'map') {
+            if (leftSidebar) leftSidebar.classList.add('mobile-hidden');
+            if (chatPanel) chatPanel.classList.add('mobile-hidden');
+        } else if (tab === 'route') {
+            if (leftSidebar) leftSidebar.classList.remove('mobile-hidden');
+            if (chatPanel) chatPanel.classList.add('mobile-hidden');
+        } else if (tab === 'chat') {
+            if (leftSidebar) leftSidebar.classList.add('mobile-hidden');
+            if (chatPanel) chatPanel.classList.remove('mobile-hidden');
+            if (chatPanel) chatPanel.classList.remove('collapsed');
+        }
+    }
+};
+
+window.initMobileLayout = function() {
+    if (window.innerWidth < 768) {
+        window.switchMobileTab(activeMobileTab);
+    } else {
+        const leftSidebar = document.querySelector('.left-sidebar');
+        const chatPanel = document.getElementById('chat-panel');
+        if (leftSidebar) leftSidebar.classList.remove('mobile-hidden');
+        if (chatPanel) chatPanel.classList.remove('mobile-hidden');
+    }
+};
+
+window.addEventListener('resize', () => {
+    window.initMobileLayout();
+});
+

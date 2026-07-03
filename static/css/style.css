@@ -58,16 +58,42 @@ html, body, #map {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Left-Side Routing Console */
-.routing-console {
+/* Left Sidebar Wrapper */
+.left-sidebar {
+    position: absolute;
     top: 20px;
     left: 20px;
     width: 380px;
-    padding: 24px;
     max-height: calc(100vh - 40px);
     display: flex;
     flex-direction: column;
+    gap: 16px;
+    z-index: 1000;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.left-sidebar > * {
+    pointer-events: auto;
+}
+
+/* Override console-box styles when inside sidebar */
+.left-sidebar .console-box {
+    position: relative;
+    top: auto;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+}
+
+/* Left-Side Routing Console */
+.routing-console {
+    padding: 24px;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
+    flex: 1;
 }
 
 /* Console Header logo & titles */
@@ -407,10 +433,8 @@ html, body, #map {
 
 /* Simulator Panel (Bottom Left) */
 .simulator-console {
-    bottom: 20px;
-    left: 20px;
-    width: 380px;
     padding: 18px 24px;
+    flex-shrink: 0;
 }
 
 .panel-title {
@@ -507,11 +531,13 @@ html, body, #map {
 }
 
 /* Chatbot Console (Bottom Right) */
+/* Chatbot Console (Bottom Right) */
 .chat-console {
     position: absolute;
     bottom: 20px;
     right: 20px;
     width: 360px;
+    max-height: calc(100vh - 40px);
     background: var(--bg-card);
     border-radius: 16px;
     box-shadow: var(--shadow-premium);
@@ -551,7 +577,9 @@ html, body, #map {
 }
 
 .chat-body {
-    height: 380px;
+    flex: 1;
+    min-height: 200px;
+    max-height: 380px;
     display: flex;
     flex-direction: column;
     background: white;
@@ -703,4 +731,110 @@ html, body, #map {
     box-shadow: var(--shadow-premium) !important;
     border: none !important;
     background: var(--bg-card) !important;
+}
+
+/* Mobile Navigation Bar (hidden on desktop) */
+.mobile-nav-bar {
+    display: none;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 767px) {
+    /* Sidebars and Consoles on Mobile */
+    .left-sidebar {
+        top: auto;
+        left: 12px;
+        right: 12px;
+        bottom: 80px;
+        width: auto;
+        max-height: calc(100vh - 100px);
+        gap: 12px;
+    }
+
+    .chat-console {
+        top: auto;
+        left: 12px;
+        right: 12px;
+        bottom: 80px;
+        width: auto;
+        max-height: calc(100vh - 100px);
+    }
+
+    .chat-body {
+        height: calc(100vh - 200px);
+        max-height: 380px;
+    }
+
+    /* Mobile hidden utility */
+    .mobile-hidden {
+        display: none !important;
+    }
+
+    /* Mobile Bottom Navigation Bar */
+    .mobile-nav-bar {
+        display: flex;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid var(--border-color);
+        z-index: 2000;
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .mobile-nav-bar .nav-item {
+        background: none;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: var(--text-secondary);
+        font-family: var(--font-body);
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex: 1;
+        height: 100%;
+    }
+    
+    .mobile-nav-bar .nav-item i {
+        font-size: 20px;
+        transition: transform 0.2s ease;
+    }
+    
+    .mobile-nav-bar .nav-item.active {
+        color: var(--primary-color);
+    }
+    
+    .mobile-nav-bar .nav-item.active i {
+        transform: translateY(-2px);
+    }
+
+    /* Shift leaflet controls so they don't get covered by nav bar or panels */
+    .leaflet-bottom {
+        bottom: 80px !important;
+    }
+    
+    .leaflet-left .leaflet-control {
+        margin-left: 10px;
+    }
+    
+    .leaflet-top .leaflet-control {
+        margin-top: 10px;
+    }
+}
+
+@media (min-width: 768px) {
+    /* Offset leaflet zoom/layers controls to clear the desktop sidebar */
+    .leaflet-left .leaflet-control {
+        margin-left: 420px !important;
+    }
 }
