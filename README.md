@@ -1,3 +1,12 @@
+---
+title: V-NEURON-X
+emoji: 🚦
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+---
+
 <p align="center">
   <img src="https://img.shields.io/badge/V--NEURON-Multimodal_Routing_Engine-1e3a8a?style=for-the-badge&logo=openstreetmap&logoColor=white" alt="V-NEURON Badge"/>
 </p>
