@@ -7,6 +7,8 @@ let originMarker = null;
 let destinationMarker = null;
 let routeLayersGroup = null;
 let trackerMarker = null;
+let landmarkLayer = null;
+let metroLayer = null;
 
 let currentScenario = 'off_peak';
 let currentMode = 'all_modes';
@@ -23,6 +25,7 @@ let isTracking = false;
 document.addEventListener("DOMContentLoaded", () => {
     initMap();
     loadStations();
+    loadLandmarksDetailed();
     initEventListeners();
 });
 
@@ -50,7 +53,16 @@ function initMap() {
         "Street Map (OSM)": osmTiles
     };
 
-    L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
+    // Initialize Layer Groups for overlays and add them to map by default
+    metroLayer = L.layerGroup().addTo(map);
+    landmarkLayer = L.layerGroup().addTo(map);
+
+    const overlays = {
+        "🚇 Metro Stations": metroLayer,
+        "📍 Landmarks & Places": landmarkLayer
+    };
+
+    L.control.layers(baseLayers, overlays, { position: 'topright' }).addTo(map);
     
     // Group for holding route polylines
     routeLayersGroup = L.featureGroup().addTo(map);
@@ -508,6 +520,25 @@ function setSimSpeed(speed) {
     }
 }
 
+// Helper to escape HTML to prevent XSS in chat messages
+function escapeHTML(text) {
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Helper to parse basic markdown bold (**text**), italics (*text*), and inline code (`text`)
+function parseMarkdown(text) {
+    let formatted = text;
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    formatted = formatted.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    formatted = formatted.replace(/`(.*?)`/g, "<code>$1</code>");
+    return formatted;
+}
+
 // 7. Chatbot UI Logic
 function toggleChatCollapse() {
     const chatPanel = document.getElementById("chat-panel");
@@ -525,8 +556,8 @@ async function sendChatMessage() {
     const messageText = inputEl.value.trim();
     if (!messageText) return;
 
-    // Append User message
-    appendMessage(messageText, "user");
+    // Append User message (escaped)
+    appendMessage(escapeHTML(messageText), "user");
     inputEl.value = "";
 
     // Show bot typing indicator
@@ -544,8 +575,8 @@ async function sendChatMessage() {
         // Remove typing bubble
         typingBubble.remove();
 
-        // Convert newlines in response to HTML breaks
-        const formattedResponse = result.response.replace(/\n/g, "<br>");
+        // Parse markdown and convert newlines in response to HTML breaks
+        const formattedResponse = parseMarkdown(result.response).replace(/\n/g, "<br>");
         appendMessage(formattedResponse, "bot");
 
         // If route was parsed and calculated successfully, update map & controls
@@ -584,3 +615,82 @@ function appendMessage(text, sender) {
     
     return msgElement;
 }
+
+// 4. Fetch detailed landmarks and render them on map
+async function loadLandmarksDetailed() {
+    try {
+        const url = (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '') + '/api/landmarks/detailed';
+        const response = await fetch(url);
+        const landmarks = await response.json();
+        
+        landmarks.forEach(item => {
+            if (item.type === 'metro') {
+                const marker = L.circleMarker(item.coords, {
+                    radius: 6,
+                    fillColor: '#f97316', // Orange for Metro
+                    color: '#ffffff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                });
+                
+                marker.bindTooltip(item.name, {
+                    direction: 'top',
+                    offset: [0, -5]
+                });
+                
+                marker.bindPopup(`
+                    <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4;">
+                        <strong>🚇 ${item.name}</strong><br/>
+                        <span style="color: #666; font-size: 11px;">Nagpur Metro Station</span><br/><br/>
+                        <button onclick="window.setStartLocation(${item.coords[0]}, ${item.coords[1]}, '${item.name.replace(/'/g, "\\'")}')" style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px; margin-right:5px; font-weight:bold;">Set Start</button>
+                        <button onclick="window.setDestLocation(${item.coords[0]}, ${item.coords[1]}, '${item.name.replace(/'/g, "\\'")}')" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:bold;">Set End</button>
+                    </div>
+                `);
+                
+                metroLayer.addLayer(marker);
+            } else {
+                const marker = L.circleMarker(item.coords, {
+                    radius: 5,
+                    fillColor: '#3b82f6', // Blue for Landmarks
+                    color: '#ffffff',
+                    weight: 1.5,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                });
+                
+                marker.bindTooltip(item.name, {
+                    direction: 'top',
+                    offset: [0, -4]
+                });
+                
+                marker.bindPopup(`
+                    <div style="font-family: sans-serif; font-size: 13px; line-height: 1.4;">
+                        <strong>📍 ${item.name}</strong><br/>
+                        <span style="color: #666; font-size: 11px;">Landmark / Place</span><br/><br/>
+                        <button onclick="window.setStartLocation(${item.coords[0]}, ${item.coords[1]}, '${item.name.replace(/'/g, "\\'")}')" style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px; margin-right:5px; font-weight:bold;">Set Start</button>
+                        <button onclick="window.setDestLocation(${item.coords[0]}, ${item.coords[1]}, '${item.name.replace(/'/g, "\\'")}')" style="background:#ef4444; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px; font-weight:bold;">Set End</button>
+                    </div>
+                `);
+                
+                landmarkLayer.addLayer(marker);
+            }
+        });
+    } catch (e) {
+        console.error("Failed to load detailed landmarks: ", e);
+    }
+}
+
+// Global setter helpers for popup buttons
+window.setStartLocation = function(lat, lon, name) {
+    document.getElementById("origin").value = name;
+    setOriginMarker([lat, lon]);
+    map.closePopup();
+};
+
+window.setDestLocation = function(lat, lon, name) {
+    document.getElementById("destination").value = name;
+    setDestinationMarker([lat, lon]);
+    map.closePopup();
+    calculateRoute();
+};

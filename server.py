@@ -1,6 +1,7 @@
 import os
 import json
 import re
+import pickle
 from flask import Flask, request, jsonify, render_template, send_from_directory
 import osmnx as ox
 import networkx as nx
@@ -9,6 +10,21 @@ from pyproj import Transformer
 from geopy.geocoders import Nominatim
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
+
+# CORS support for cross-origin frontend requests
+@app.before_request
+def before_request():
+    if request.method == 'OPTIONS':
+        response = app.make_response('')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        return response
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 # Create necessary static directories
 os.makedirs('static/css', exist_ok=True)
@@ -19,9 +35,49 @@ os.makedirs('templates', exist_ok=True)
 gps_to_utm = Transformer.from_crs("EPSG:4326", "EPSG:32644", always_xy=True)
 utm_to_gps = Transformer.from_crs("EPSG:32644", "EPSG:4326", always_xy=True)
 
+# Resolve data directory path dynamically
+def get_data_dir():
+    # 1. Check if "backend/data" exists and contains our graph files
+    if os.path.exists(os.path.join("backend", "data", "vneuron_omnimodal_final.graphml")):
+        return os.path.join("backend", "data")
+    
+    # 2. Check if "data" is a text file (committed symlink) pointing to backend/data
+    if os.path.isfile("data"):
+        try:
+            with open("data", "r", encoding="utf-8") as f:
+                target = f.read().strip()
+                if os.path.exists(target):
+                    return target
+        except Exception:
+            pass
+            
+    # 3. Default fallback
+    return "data"
+
+DATA_DIR = get_data_dir()
+print(f"Resolved data directory: {DATA_DIR}")
+
+def load_graph(base_name):
+    pkl_path = os.path.join(DATA_DIR, f"{base_name}.pickle")
+    xml_path = os.path.join(DATA_DIR, f"{base_name}.graphml")
+    
+    if os.path.exists(pkl_path):
+        print(f"Loading {base_name} from pickle...")
+        try:
+            with open(pkl_path, "rb") as f:
+                return pickle.load(f)
+        except Exception as e:
+            print(f"Failed to load pickle for {base_name}: {e}. Falling back to GraphML...")
+            
+    if os.path.exists(xml_path):
+        print(f"Loading {base_name} from GraphML (XML)...")
+        return ox.load_graphml(xml_path)
+        
+    raise FileNotFoundError(f"Could not find graph file for {base_name} in {DATA_DIR} (.pickle or .graphml)")
+
 print("Loading V-NEURON graphs...")
-G_omni = ox.load_graphml("data/vneuron_omnimodal_final.graphml")
-G_calib = ox.load_graphml("data/vneuron_calibrated_network.graphml")
+G_omni = load_graph("vneuron_omnimodal_final")
+G_calib = load_graph("vneuron_calibrated_network")
 print("Graphs loaded successfully!")
 
 # Initialize Nominatim Geocoder
@@ -50,7 +106,8 @@ landmark_lookup = {
 def load_metro_stations():
     stations = {}
     try:
-        with open("data/nagpur_metro.geojson", "r", encoding="utf-8") as f:
+        metro_path = os.path.join(DATA_DIR, "nagpur_metro.geojson")
+        with open(metro_path, "r", encoding="utf-8") as f:
             data = json.load(f)
             for feature in data.get("features", []):
                 geom = feature.get("geometry", {})
@@ -71,27 +128,35 @@ for name, coords in metro_stations.items():
 
 def geocode_place(query):
     if not query:
-        return None
+        return None, None
     query_clean = query.lower().strip()
     
     # 1. Direct Lookup
     if query_clean in landmark_lookup:
-        return landmark_lookup[query_clean]
+        return landmark_lookup[query_clean], query_clean
     
     # 2. Substring Matching
     for key, coords in landmark_lookup.items():
         if query_clean in key or key in query_clean:
-            return coords
+            return coords, key
             
-    # 3. Online Geocoding via Nominatim
+    # 3. Fuzzy Matching / Spelling Correction
+    import difflib
+    matches = difflib.get_close_matches(query_clean, list(landmark_lookup.keys()), n=1, cutoff=0.7)
+    if matches:
+        matched_key = matches[0]
+        print(f"Spelling correction: '{query_clean}' -> '{matched_key}'")
+        return landmark_lookup[matched_key], matched_key
+        
+    # 4. Online Geocoding via Nominatim
     try:
         location = geolocator.geocode(query + ", Nagpur, Maharashtra, India", timeout=5)
         if location:
-            return (location.latitude, location.longitude)
+            return (location.latitude, location.longitude), query
     except Exception as e:
         print(f"Online Geocoding failed for {query}: {e}")
         
-    return None
+    return None, None
 
 def parse_coordinate_str(s):
     # Detect if string matches coordinate format: "lat, lon"
@@ -103,7 +168,7 @@ def parse_coordinate_str(s):
 def resolve_location(query):
     coords = parse_coordinate_str(query)
     if coords:
-        return coords
+        return coords, query
     return geocode_place(query)
 
 @app.route('/')
@@ -115,6 +180,20 @@ def get_stations():
     # Return sorted list of known landmarks and metro stations
     station_names = sorted(list(landmark_lookup.keys()))
     return jsonify(station_names)
+
+@app.route('/api/landmarks/detailed', methods=['GET'])
+def get_detailed_landmarks():
+    detailed = []
+    metro_names = set(load_metro_stations().keys())
+    for name, coords in landmark_lookup.items():
+        is_metro = name in metro_names
+        detailed.append({
+            "name": name.title(),
+            "coords": coords,
+            "type": "metro" if is_metro else "landmark"
+        })
+    return jsonify(detailed)
+
 
 @app.route('/api/route', methods=['POST'])
 def get_route():
@@ -219,8 +298,8 @@ def chat():
     })
 
 def compute_route_internal(origin_str, dest_str, scenario, mode):
-    orig_coords = resolve_location(origin_str)
-    dest_coords = resolve_location(dest_str)
+    orig_coords, resolved_orig_name = resolve_location(origin_str)
+    dest_coords, resolved_dest_name = resolve_location(dest_str)
     
     if not orig_coords:
         return {"error": f"Could not resolve origin place: '{origin_str}'"}
@@ -265,8 +344,6 @@ def compute_route_internal(origin_str, dest_str, scenario, mode):
     path_coords.append([orig_lat, orig_lon])
     
     node_start = G_active.nodes[orig_node]
-    first_lon, first_lat = utm_to_gps.transform(node_start['x'], node_start['y'])
-    path_coords.append([first_lat, first_lon])
     
     # Starting Walk Segment to snapping node
     walk_dist = ox.distance.euclidean(utm_y_orig, utm_x_orig, node_start['y'], node_start['x'])
@@ -283,6 +360,10 @@ def compute_route_internal(origin_str, dest_str, scenario, mode):
     current_segment_len = 0
     current_segment_time = 0
     current_segment_name = ""
+    
+    # Collect all UTM coordinates in order for batch transformation
+    utm_points = []
+    utm_points.append((node_start['x'], node_start['y']))
     
     for i in range(len(route) - 1):
         u, v = route[i], route[i+1]
@@ -306,24 +387,17 @@ def compute_route_internal(origin_str, dest_str, scenario, mode):
         else:
             seg_mode = 'Road'
             
-        # Coordinates tracing
-        edge_coords = []
+        # Collect coordinates (UTM)
         if 'geometry' in data:
             geom = data['geometry']
             for x, y in geom.coords:
-                lon, lat = utm_to_gps.transform(x, y)
-                edge_coords.append([lat, lon])
+                utm_points.append((x, y))
         else:
             n1 = G_active.nodes[u]
             n2 = G_active.nodes[v]
-            lon1, lat1 = utm_to_gps.transform(n1['x'], n1['y'])
-            lon2, lat2 = utm_to_gps.transform(n2['x'], n2['y'])
-            edge_coords = [[lat1, lon1], [lat2, lon2]]
+            utm_points.append((n1['x'], n1['y']))
+            utm_points.append((n2['x'], n2['y']))
             
-        for pt in edge_coords:
-            if not path_coords or path_coords[-1] != pt:
-                path_coords.append(pt)
-                
         # Group similar modes
         if seg_mode != current_mode:
             if current_mode is not None:
@@ -354,7 +428,6 @@ def compute_route_internal(origin_str, dest_str, scenario, mode):
         
     # Last Walk Segment to actual destination coords
     node_end = G_active.nodes[dest_node]
-    dest_lon_snap, dest_lat_snap = utm_to_gps.transform(node_end['x'], node_end['y'])
     walk_dist_end = ox.distance.euclidean(utm_y_dest, utm_x_dest, node_end['y'], node_end['x'])
     walk_time_end = walk_dist_end / 1.25
     if walk_dist_end > 15:
@@ -365,14 +438,31 @@ def compute_route_internal(origin_str, dest_str, scenario, mode):
             "name": "Walk to destination"
         })
         
+    utm_points.append((node_end['x'], node_end['y']))
+    
+    # Perform single batch transformation of all UTM coordinates to GPS (WGS84)
+    if utm_points:
+        xs = [pt[0] for pt in utm_points]
+        ys = [pt[1] for pt in utm_points]
+        lons, lats = utm_to_gps.transform(xs, ys)
+        gps_coords = list(zip(lats, lons))
+    else:
+        gps_coords = []
+        
+    # Build path_coords with consecutive deduplication
+    for lat, lon in gps_coords:
+        pt_list = [lat, lon]
+        if not path_coords or path_coords[-1] != pt_list:
+            path_coords.append(pt_list)
+            
     path_coords.append([dest_lat, dest_lon])
     
     total_distance_km = sum(seg["length_m"] for seg in segments) / 1000.0
     total_time_min = sum(seg["time_sec"] for seg in segments) / 60.0
     
     # Pretty names
-    orig_name = origin_str if isinstance(origin_str, str) else f"{orig_lat:.4f}, {orig_lon:.4f}"
-    dest_name = dest_str if isinstance(dest_str, str) else f"{dest_lat:.4f}, {dest_lon:.4f}"
+    orig_name = resolved_orig_name if resolved_orig_name else (origin_str if isinstance(origin_str, str) else f"{orig_lat:.4f}, {orig_lon:.4f}")
+    dest_name = resolved_dest_name if resolved_dest_name else (dest_str if isinstance(dest_str, str) else f"{dest_lat:.4f}, {dest_lon:.4f}")
     
     # Capitalize names for formatting
     orig_name = orig_name.title()
@@ -400,4 +490,5 @@ def compute_route_internal(origin_str, dest_str, scenario, mode):
     }
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 7860))
+    app.run(debug=True, host='0.0.0.0', port=port)
