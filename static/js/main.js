@@ -1,5 +1,10 @@
 // V-NEURON - Frontend Script
 
+// API configuration: respects injected window.PROJECT_CONFIG, localStorage override, or default relative URL
+const API_BASE_URL = (typeof window !== 'undefined' && window.PROJECT_CONFIG?.apiBaseUrl) || 
+    (typeof localStorage !== 'undefined' && localStorage.getItem('VNEURON_API_URL')) || 
+    '';
+
 // Global State
 let map;
 let baseLayers = {};
@@ -79,7 +84,7 @@ function initMap() {
 // 2. Fetch autocomplete landmarks
 async function loadStations() {
     try {
-        const response = await fetch('/api/stations');
+        const response = await fetch(API_BASE_URL + '/api/stations');
         knownLandmarks = await response.json();
         const datalist = document.getElementById("stations-list");
         datalist.innerHTML = "";
@@ -216,7 +221,7 @@ async function calculateRoute() {
     calcBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Calculating...';
 
     try {
-        const response = await fetch('/api/route', {
+        const response = await fetch(API_BASE_URL + '/api/route', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -537,7 +542,7 @@ async function sendChatMessage() {
     const typingBubble = appendMessage('<i class="fa-solid fa-ellipsis fa-fade"></i>', "bot typing");
 
     try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch(API_BASE_URL + '/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: messageText })
