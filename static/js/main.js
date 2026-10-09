@@ -14,6 +14,8 @@ let currentScenario = 'off_peak';
 let currentMode = 'all_modes';
 let knownLandmarks = [];
 
+const CARTO_API_KEY = 'cb1_4fhl_1_8fb9fd040c8200f6c33480ff';
+
 // Simulation State
 let routeCoords = [];
 let trackerIndex = 0;
@@ -40,8 +42,8 @@ function initMap() {
         attributionControl: true
     }).setView([21.1458, 79.0882], 13);
 
-    // CartoDB Positron - Light and clean basemap
-    const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    // CARTO Basemaps require an API key for raster tiles to remove the watermark.
+    const lightTiles = L.tileLayer(`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${CARTO_API_KEY}`, {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 20
